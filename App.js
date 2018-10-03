@@ -6,7 +6,8 @@ import {
   TextInput,
   Button,
   FlatList,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from "react-native";
 
 const styles = StyleSheet.create({
@@ -60,7 +61,7 @@ class App extends PureComponent {
 
     if (
       this.state.form.hasOwnProperty("idItem") &&
-      this.state.form.idItem !== ""
+      this.state.form.idItem >= 0
     ) {
       registers = registers.map((item, index) => {
         if (index === this.state.form.idItem) {
@@ -151,13 +152,49 @@ class App extends PureComponent {
     });
   };
 
-  onPressRemove = indexItemWillRemove => () => {
-    var FiltDataRegister = this.state.registers.filter(
-      (item, index) => index != indexItemWillRemove
-    );
-    this.setState({
-      registers: FiltDataRegister
-    });
+  // onPressRemove = indexItemWillRemove => () => {
+  //   var FiltDataRegister = this.state.registers.filter(
+  //     (item, index) => index != indexItemWillRemove
+  //   );
+  //   this.setState({
+  //     registers: FiltDataRegister
+  //   });
+  // };
+
+  // onPressRemove = indexItemWillRemove => () => {
+  //   var FiltDataRegister = this.state.registers.filter(
+  //     idItem => idItem != indexItemWillRemove
+  //   );
+  //   this.setState({
+  //     registers: FiltDataRegister
+  //   });
+  // };
+
+  onPressDelete = () => {
+    if (
+      this.state.form.hasOwnProperty("idItem") &&
+      this.state.form.idItem >= 0
+    ) {
+      this.setState({
+        form: {
+          user: "",
+          email: "",
+          password: "",
+          mobile: ""
+        },
+        registers: this.state.registers.filter(
+          (item, index) => index !== this.state.form.idItem
+        )
+      });
+    } else {
+      Alert.alert("Failed", "Tidak ada item yang terpilih");
+    }
+
+    // var FiltDataRegisteridItem = this.state.form.idItem;
+    // FiltDataRegisteridItem.filter(idItem => idItem != indexDelete);
+    // this.setState({
+    // form: { FiltDataRegisteridItem }
+    // });
   };
 
   _renderItemForm = ({ item, index }) => {
@@ -176,14 +213,23 @@ class App extends PureComponent {
           </View>
         </TouchableOpacity>
         <View>
-          <Button
+          {/* <Button
             onPress={this.onPressRemove(index)}
             title="Hapus"
             color="red"
-          />
+          /> */}
         </View>
       </React.Fragment>
     );
+  };
+
+  _listFooterComponent = () => {
+    if (this.state.registers.length > 0) {
+      return (
+        <Button onPress={this.onPressDelete} title="remove" color="#841584" />
+      );
+    }
+    return null;
   };
 
   render() {
@@ -229,6 +275,7 @@ class App extends PureComponent {
             data={this.state.registers}
             keyExtractor={this._keyExtractor}
             renderItem={this._renderItemForm}
+            ListFooterComponent={this._listFooterComponent}
           />
         </View>
       </View>
